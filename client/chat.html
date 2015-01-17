@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en" ng-app>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    <title>Chat</title>
+  </head>
+  <div id="chat_layout">
+    
+  </div>
+  <br>
+  <form id="send_form">
+    Message: <input type="text" id="message" size="64" maxlength="512" />
+    <input type="submit" value="Send" />
+  </form>
+    
+    <script type="text/javascript">
+      function publish() {
+        $.ajax({
+          type: 'POST',
+          url: '/chat/publish',
+          data: JSON.stringify({message: $('#message').val()}),
+          success: function() {
+            $('#message').val('');
+          }
+        });
+        
+        return false;
+      }
+      
+      function subscribe() {
+        $.ajax({
+          type: 'GET',
+          url: '/chat/subscribe',
+          success: function(message) {
+            $("#chat_layout").append("<div>" + message + "</div>");
+            
+            subscribe();
+          },
+          error: function() {
+            setTimeout(subscribe, 500);
+          }
+        });
+      }
+      
+      subscribe();
+    
+      send_form.onsubmit = publish;
+    </script>
+  </body>
+</html>
